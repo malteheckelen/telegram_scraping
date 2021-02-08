@@ -1,4 +1,4 @@
-# Get Telegram Data from Seed Channel
+# Recursively Get Telegram Channel Messages from Seed Channel and its Forwards
 
 More detailed explanation to follow.
 
