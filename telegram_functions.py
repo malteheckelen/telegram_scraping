@@ -37,6 +37,7 @@ def recursive_get_channel_messages(api_id, api_hash, channel_list, retrieved_cha
                     if message.forward:
                         if (message.forward.channel_id not in retrieved_channel_ids) and (message.forward.channel_id not in new_channel_list):
                           new_local_channel_list.append(message.forward.channel_id)
+                # only get new channels if they make up a somewhat sizeable fraction of forwards
                 new_local_channel_list = [x for x in new_local_channel_list if new_local_channel_list.count(x) / len(new_local_channel_list) > .01]
                 new_channel_list.extend([x for x in new_local_channel_list if x not in new_channel_list])
                 with open(''.join(['_'.join([str(seed_channel.id), ''.join([x for x in seed_channel.title if x.isalpha()])]), '.txt']), 'w') as f:
@@ -72,22 +73,22 @@ def prepare_for_harvest():
     channels_to_get = list(set(channels_to_get))
     return(seen, channels_to_get)
 
-def load_channel(filename):
-	channel_messages = []
-    with open(''.join(['backup/', text_file]), 'r') as f:
+def load_channel(filename, foldername):
+    channel_messages = []
+    with open(''.join([foldername, '/', text_file]), 'r') as f:
         channel_messages = f.read().split(';;;\n;;;')
     f.close()
     channel_messages = [eval(msg)['text'] for msg in channel_messages]
     return channel_messages
     
-def update_channels(client):
+def update_channels(client, foldername):
     text_files = [tf for tf in os.listdir('backup') if tf.endswith('txt')]
     
     for text_file in text_files:
         channel_id = int(re.search('(^.*?)_.*$', text_file).group(1))
         print(channel_id)
         channel_messages = []
-        with open(''.join(['backup/', text_file]), 'r') as f:
+        with open(''.join([foldername, '/', text_file]), 'r') as f:
             channel_messages = f.read().split(';;;\n;;;')
         f.close()
         start_date = max([eval(msg)['date'] for msg in channel_messages])
